@@ -99,7 +99,7 @@ The application provides an interactive interface to demonstrate model performan
 ## 🛠️ How to Run the Project
 
 1. Clone the repository:
-     git clone https://github.com/<your-username>/wine-quality-ml-model-comparison.git
+     git clone [https://github.com/AparnaGeetha/wine-quality-ml-model-comparison.git](https://github.com/AparnaGeetha/wine-quality-ml-model-comparison)
 2.	Install dependencies:
      pip install -r requirements.txt
 3.	Run the Streamlit app:
