@@ -63,24 +63,29 @@ These metrics provide a comprehensive evaluation of classification performance.
 ## 📋 Results Summary
 
 | Model | Accuracy | AUC | Precision | Recall | F1-score | MCC |
-|------|----------|-----|-----------|--------|----------|-----|
-| Logistic Regression | — | — | — | — | — | — |
-| Decision Tree | — | — | — | — | — | — |
-| KNN | — | — | — | — | — | — |
-| Naive Bayes | — | — | — | — | — | — |
-| Random Forest | — | — | — | — | — | — |
-| XGBoost | — | — | — | — | — | — |
-
-(*Values to be filled after model training*)
+|------|----------:|-----:|----------:|------:|---------:|----:|
+| Logistic Regression | 0.8223 | 0.8048 | 0.6147 | 0.2617 | 0.3671 | 0.3178 |
+| Decision Tree | 0.8538 | 0.7749 | 0.6250 | 0.6445 | 0.6346 | 0.5434 |
+| KNN | 0.8323 | 0.8264 | 0.5922 | 0.4766 | 0.5281 | 0.4314 |
+| GaussianNB | 0.7346 | 0.7486 | 0.3901 | 0.6172 | 0.4781 | 0.3268 |
+| Random Forest | 0.8877 | 0.9162 | 0.8090 | 0.5625 | 0.6636 | 0.6130 |
+| XGBoost | 0.8869 | 0.9087 | 0.7633 | 0.6172 | 0.6825 | 0.6198 |
 
 ---
 
 ## 🔍 Observations
 
-- Ensemble models such as Random Forest and XGBoost achieved superior performance compared
-  to simpler models.
-- Logistic Regression performed reasonably well, indicating near-linear separability of the data.
-- Naive Bayes showed comparatively lower performance due to the assumption of feature independence.
+- Ensemble models (Random Forest and XGBoost) achieved the best overall performance.
+- XGBoost obtained the highest MCC (0.6198) and F1-score (0.6825), indicating better balance between precision and recall.
+- Random Forest achieved the highest AUC (0.9162), demonstrating strong classification capability.
+- Logistic Regression showed high precision but low recall, suggesting conservative prediction of high-quality wines.
+- Gaussian Naive Bayes performed the weakest, likely due to the assumption of feature independence.
+  
+---
+
+## 🎯 Primary Evaluation Metric
+
+Matthews Correlation Coefficient (MCC) was selected as the primary metric because the dataset is slightly imbalanced. MCC provides a balanced evaluation by considering true and false positives and negatives, making it more reliable than accuracy alone.
 
 ---
 
