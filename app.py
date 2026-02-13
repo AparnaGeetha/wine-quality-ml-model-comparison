@@ -50,11 +50,57 @@ def load_model_pickle(model_name):
 
 @st.cache_resource
 def load_prep():
+    """
+    Returns (imputer, scaler) tuple.
+    """
     path = os.path.join(MODEL_DIR, PREP_OBJ_NAME)
-    if not os.path.exists(path):
-        return None
-    return joblib.load(path)  # returns (imputer, scaler)
+    # 1) try loading pickled objects
+    if os.path.exists(path):
+        try:
+            prep = joblib.load(path)
+            # sanity check: should be tuple of (imputer, scaler)
+            if isinstance(prep, tuple) and len(prep) == 2:
+                return prep
+            # if format unexpected, fall through to rebuild
+        except Exception as e:
+            # log the exception for debugging but continue to rebuild
+            st.warning("Could not load saved preprocessing objects (pickle incompatibility). Rebuilding from dataset.")
+            # Optionally show the traceback in the Streamlit logs
+            print("Preprocessing load error:", e)
+            traceback.print_exc()
 
+    # 2) fallback: fit new imputer + scaler on merged CSV (if available)
+    if os.path.exists(MERGED_CSV_PATH):
+        try:
+            df_all = read_csv_flex(MERGED_CSV_PATH)
+            # drop target if present
+            if TARGET_COL in df_all.columns:
+                df_all = df_all.drop(columns=[TARGET_COL])
+            if 'quality' in df_all.columns:
+                df_all = df_all.drop(columns=['quality'])
+            num_cols = df_all.select_dtypes(include=[np.number]).columns.tolist()
+            if len(num_cols) == 0:
+                raise ValueError("Merged CSV has no numeric columns to fit preprocessing.")
+            imputer = SimpleImputer(strategy='median')
+            scaler = StandardScaler()
+            X_num = df_all[num_cols].copy()
+            X_imp = imputer.fit_transform(X_num)
+            scaler.fit(X_imp)
+            # Save these new preprocessing objects so future loads work
+            try:
+                os.makedirs(MODEL_DIR, exist_ok=True)
+                joblib.dump((imputer, scaler), path)
+                print(f"Rebuilt and saved preprocessing objects to {path}")
+            except Exception as e:
+                print("Warning: failed to save rebuilt preprocessing objects:", e)
+            return (imputer, scaler)
+        except Exception as e:
+            st.error(f"Failed to rebuild preprocessing from {MERGED_CSV_PATH}: {e}")
+            traceback.print_exc()
+            return None
+    else:
+        st.error("Preprocessing objects missing and merged dataset not found. Run training script to create preprocessing objects.")
+        return None
 def read_csv_flex(path_or_buffer):
     """
     Try reading csv; handle comma or semicolon delimiters.
