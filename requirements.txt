@@ -4,3 +4,4 @@ numpy
 scikit-learn==1.6.1
 matplotlib
 joblib
+xgboost==2.1.4
